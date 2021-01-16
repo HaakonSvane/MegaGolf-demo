@@ -1,10 +1,12 @@
 
 public class Ball implements PhysicsObj{
+ 
  private PVector pos;
  private PVector vel;
  private PVector acc;
  private float rad;
  private float mass = 0.5;
+ private boolean ignore_physics;
  
  final static float DEFAULT_RADIUS = 10;
  final static float MAX_DRAG_LENGTH = 200;
@@ -24,6 +26,7 @@ public class Ball implements PhysicsObj{
    this.vel = new PVector(0, 0);
    this.acc = new PVector(0, 0);
    this.rad = radius;
+   this.ignore_physics = false;
  }
  
  PVector force_function(PhysicsObj obj){
@@ -36,18 +39,19 @@ public class Ball implements PhysicsObj{
    circle(pos.x, pos.y, rad);
  }
  
- void update(ArrayList<PhysicsObj> interactibles, float dt){
+ void update(ArrayList<PhysicsObj> interactibles, float dt){ //<>//
    PVector sum_forces = new PVector(0,0);
    for (PhysicsObj i : interactibles){
-     sum_forces = sum_forces.add(i.force_function(this));
+      sum_forces = sum_forces.add(i.force_function(this)); 
    }
+   if (ignore_physics) sum_forces = new PVector(0,0);
    PhysicsInfo dat = new PhysicsInfo(pos, vel, acc, mass);
    dat = integrate(dat, sum_forces, dt);
    
    pos = dat.pos;
    vel = dat.vel.limit(MAX_SPEED);
    acc = dat.acc.limit(MAX_ACC);
-   
+
  }
  
  private PVector vel_from_polar(float r, float angle){
@@ -60,6 +64,7 @@ public class Ball implements PhysicsObj{
  }
  
  void hit_ball(float mouse_x, float mouse_y){
+   ignore_physics(false, false);
    PVector mouse_pos = new PVector(mouse_x, mouse_y);
    float angle = angle_between_vectors(pos, mouse_pos)+PI;
    float dist = pos.dist(mouse_pos);
@@ -67,6 +72,7 @@ public class Ball implements PhysicsObj{
  }
  
   void pull_up(float mouse_x, float mouse_y, ArrayList<PhysicsObj> interactibles){
+    ignore_physics(true, true);
     strokeWeight(4);
     PVector end_pos = new PVector(mouse_x, mouse_y);
     float dist = end_pos.dist(pos);
@@ -137,6 +143,12 @@ public class Ball implements PhysicsObj{
    this.mass = mass;
  }
  
- 
+ void ignore_physics(boolean val, boolean force_stop){
+   this.ignore_physics = val;
+   if(force_stop){
+     set_vel(new PVector(0,0));
+     set_acc(new PVector(0,0));
+   }
+ }
  
 }

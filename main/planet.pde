@@ -5,6 +5,7 @@ class Planet implements PhysicsObj{
   private float rad;
   private float g_rad; 
   private float mass;
+  private boolean ignore_physics;
   
   final static float G_CONST = 1000;
   final static float DEFAULT_RADIUS = 90;
@@ -21,6 +22,7 @@ class Planet implements PhysicsObj{
     this.rad = rad;
     this.g_rad = 5*rad/2.0;
     this.mass = INIT_MASS + 5*pow(rad, 2);
+    this.ignore_physics = false;
 
   }
   
@@ -28,8 +30,7 @@ class Planet implements PhysicsObj{
     float c = 0;
     if(PVector.dist(pos, obj.get_pos()) <= g_rad) {
       if(PVector.dist(pos, obj.get_pos()) <= rad && obj.is_moving()){
-        obj.set_vel(new PVector(0,0));
-        obj.set_acc(new PVector(0,0));
+        obj.ignore_physics(true, true);
       }else{
         c = G_CONST*mass*obj.get_mass() / (pow(pos.dist(obj.get_pos()), 3));
       }  
@@ -40,9 +41,9 @@ class Planet implements PhysicsObj{
   void render(){
 
     noStroke();
-    fill(200,60,0, 30);
+    fill(170,60,0, 30);
     circle(pos.x, pos.y, g_rad);
-    fill(0,230,0);
+    fill(0,210,0);
     circle(pos.x, pos.y , rad);
 
   }
@@ -78,6 +79,14 @@ class Planet implements PhysicsObj{
  
  boolean is_moving(){
    return vel.mag() != 0; 
+ }
+ 
+ void ignore_physics(boolean val, boolean force_stop){
+   this.ignore_physics = val;
+   if(force_stop){
+     set_vel(new PVector(0,0));
+     set_acc(new PVector(0,0));
+   }
  }
  
 }

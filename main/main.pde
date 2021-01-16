@@ -2,13 +2,11 @@ import ch.bildspur.postfx.builder.*;
 import ch.bildspur.postfx.pass.*;
 import ch.bildspur.postfx.*;
 
+Camera cam;
 Ball golf;
 PostFX fx;
 Stars s;
 
-float cam_x = 0;
-float cam_y = 0;
-float CAM_X_BORDER;
 final PVector START_POS = new PVector(400, 400);
 
 ArrayList<PhysicsObj> planets = new ArrayList<PhysicsObj>();
@@ -25,15 +23,16 @@ void setup(){
   planets.add(new Planet(3*width/4.0, 1*height/4.0));
   planets.add(new Planet(3*width/4.0, 3*height/4.0, 200));
   s = new Stars(-7000 ,-3000, width*10, height*10);
-  
-  CAM_X_BORDER = 3*width/8;
+  cam = new Camera();
+  cam.following(golf);
 }
 
 void draw(){
   background(40,40,40);
+  cam.update();
   s.render();
   if(drag_state){
-    golf.pull_up(mouseX+cam_x, mouseY+cam_y, planets);  
+    golf.pull_up(mouseX+cam.x, mouseY+cam.y, planets);  
   }
   for (PhysicsObj po : planets){
     Planet p = (Planet) po;
@@ -41,14 +40,6 @@ void draw(){
   }
    golf.render();
    
-   if (golf.get_pos().x > CAM_X_BORDER+cam_x){
-     float dx = golf.get_pos().x-(CAM_X_BORDER+cam_x);
-     float move = 1f/2*sqrt(dx);
-     beginCamera();
-     translate(-move,0,0);
-     cam_x += move;
-     endCamera();
-   }
    
    
   
@@ -74,7 +65,6 @@ void keyPressed(){
     beginCamera();
     for(int i = 0; i < 100; i++){
       translate(-1,0,0);
-      cam_x += 1;
     }
     endCamera();
   }
@@ -85,12 +75,8 @@ void keyPressed(){
     golf.set_acc(new PVector(0,0));
     golf.set_vel(new PVector(0,0));
     golf.set_pos(new PVector(START_POS.x,START_POS.y));
-    
-    beginCamera();
-    translate(cam_x, cam_y);
-    endCamera();
-    cam_x = 0;
-    cam_y = 0;
+   
+    cam.reset(false);
 
   }
 }
@@ -98,13 +84,13 @@ void keyPressed(){
 boolean drag_state = false;
 void mouseReleased(){
   if (drag_state){
-    golf.hit_ball(mouseX+cam_x, mouseY+cam_y);
+    golf.hit_ball(mouseX+cam.x, mouseY+cam.y);
   }
   drag_state = false;
 }
 
 void mousePressed(){
-  if (golf.mouse_touching(mouseX+cam_x, mouseY+cam_y) && !golf.is_moving()){
+  if (golf.mouse_touching(mouseX+cam.x, mouseY+cam.y) && !golf.is_moving()){
     drag_state = true;
   }
 }
