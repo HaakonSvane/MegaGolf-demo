@@ -7,6 +7,7 @@ public class Ball implements PhysicsObj{
  private float rad;
  private float mass = 0.5;
  private boolean ignore_physics;
+ private boolean is_ghost;
  
  final static float DEFAULT_RADIUS = 10;
  final static float MAX_DRAG_LENGTH = 200;
@@ -26,7 +27,9 @@ public class Ball implements PhysicsObj{
    this.vel = new PVector(0, 0);
    this.acc = new PVector(0, 0);
    this.rad = radius;
+   
    this.ignore_physics = false;
+   this.is_ghost = false;
  }
  
  PVector force_function(PhysicsObj obj){
@@ -88,6 +91,7 @@ public class Ball implements PhysicsObj{
     strokeWeight(2);
     stroke(190, 190, 190, TRAJ_ALPHA);
     noFill();
+    
     beginShape();
     // The fake variables are for the simulation of the trajectory.
     float fake_dt = FORWARD_TIME*1f/FORWARD_POINTS;
@@ -149,6 +153,14 @@ public class Ball implements PhysicsObj{
      set_vel(new PVector(0,0));
      set_acc(new PVector(0,0));
    }
+ }
+ 
+ boolean is_ghost(){
+   return is_ghost;
+ }
+ 
+ void ghost(boolean val){
+   this.is_ghost = val;
  }
  
 }

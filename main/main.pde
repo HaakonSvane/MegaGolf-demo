@@ -6,6 +6,7 @@ Camera cam;
 Ball golf;
 PostFX fx;
 Stars s;
+UI ui;
 
 final PVector START_POS = new PVector(400, 400);
 
@@ -19,12 +20,13 @@ void setup(){
   smooth(6);
   ellipseMode(RADIUS);
   golf = new Ball(START_POS.x, START_POS.y);
-  planets.add(new Planet(width/2.0, 3*height/4.0, 40));
-  planets.add(new Planet(3*width/4.0, 1*height/4.0));
-  planets.add(new Planet(3*width/4.0, 3*height/4.0, 200));
+  planets.add(new Planet(width/2.0-200, 3*height/4.0, 40));
+  planets.add(new Planet(width-50, 1*height/5.0));
+  planets.add(new Planet(3*width/4.0, 3*height/4.0, 190));
   s = new Stars(-7000 ,-3000, width*10, height*10);
   cam = new Camera();
   cam.following(golf);
+  ui = new UI(cam);
 }
 
 void draw(){
@@ -39,7 +41,7 @@ void draw(){
     p.render();
   }
    golf.render();
-   
+
    
    
   
@@ -57,6 +59,8 @@ void draw(){
     .noise(0.01, 100)
     .bloom(10, 4, 8)
     .compose();
+    
+    ui.render();
 }
 
 
@@ -70,7 +74,10 @@ void keyPressed(){
   }
   if(keyCode == ' '){
     textSize(48);
-    text("Restart", 10, 30);
+    Text t = new Text("RESTART", width/2, height/2, 48);
+    t.set_lifetime(1000);
+    t.set_color(color(255,255,255));
+    ui.add_element(t);
     
     golf.set_acc(new PVector(0,0));
     golf.set_vel(new PVector(0,0));

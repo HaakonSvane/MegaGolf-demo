@@ -23,9 +23,14 @@ public interface PhysicsObj{
   void set_vel(PVector vel);
   void set_acc(PVector acc);
   void set_mass(float mass);
+  
   void ignore_physics(boolean val, boolean force_stop);
   
   boolean is_moving();
+  
+  // Ghost objects have different rules than normal ones. The trajectory is an example of such an object.
+  boolean is_ghost();
+  void ghost(boolean val);
 }
 
 // Verlet integration.
